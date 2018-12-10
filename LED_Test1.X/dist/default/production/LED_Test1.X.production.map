@@ -60,10 +60,10 @@ xc16-ld 1.35 (A)
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0x100           0x180  (384)
-.text                        0x300                0x44            0x66  (102)
-.dinit                       0x344                0x10            0x18  (24)
+.text                        0x300                0x42            0x63  (99)
+.dinit                       0x342                0x10            0x18  (24)
 
-                 Total "program" memory used (bytes):          0x1fe  (510) <1%
+                 Total "program" memory used (bytes):          0x1fb  (507) <1%
 
 
 Auxflash Memory  [Origin = 0x7fc000, Length = 0x3ffa]
@@ -112,7 +112,7 @@ External Symbols in Program Memory (by address):
                   0x000248                  __data_init_extended
                   0x0002fa                  __DefaultInterrupt
                   0x000300                  _main
-                  0x00031c                  _delay
+                  0x00031a                  _delay
 
 External Symbols in Program Memory (by name):
 
@@ -121,7 +121,7 @@ External Symbols in Program Memory (by name):
                   0x000248                  __data_init_extended
                   0x00023c                  __psv_init
                   0x000200                  __resetPRI
-                  0x00031c                  _delay
+                  0x00031a                  _delay
                   0x000300                  _main
 
 Memory Configuration
@@ -233,9 +233,9 @@ __FUID0
  *(.debug_abbrev)
  .debug_abbrev    0x000000         0xc5 build/default/production/newmainXC16.o
 
-.debug_line       0x000000         0xfe
+.debug_line       0x000000         0xfd
  *(.debug_line)
- .debug_line      0x000000         0xfe build/default/production/newmainXC16.o
+ .debug_line      0x000000         0xfd build/default/production/newmainXC16.o
 
 .debug_frame      0x000000         0x4c
  *(.debug_frame)
@@ -2985,10 +2985,10 @@ __c30_signature
  .ndata             0x1002          0x2 build/default/production/newmainXC16.o
                     0x1002                  _delayVal
 
-.text             0x000300         0x44
- .text            0x000300         0x44 build/default/production/newmainXC16.o
+.text             0x000300         0x42
+ .text            0x000300         0x42 build/default/production/newmainXC16.o
                   0x000300                  _main
-                  0x00031c                  _delay
+                  0x00031a                  _delay
 
-.dinit            0x000344         0x10
- .dinit           0x000344         0x10 data_init
+.dinit            0x000342         0x10
+ .dinit           0x000342         0x10 data_init

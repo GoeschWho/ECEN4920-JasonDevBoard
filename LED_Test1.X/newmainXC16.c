@@ -17,10 +17,10 @@ unsigned int delayVal = 3048;
 
 int main(void)
 {
+    // Disable Analog, make digital pin
     ANSELE = 0;
     // Set port direction. 1=input(default)
     TRISE = 0;
-    delay();
     
     while(1)
     {
