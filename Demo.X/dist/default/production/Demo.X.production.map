@@ -6,7 +6,7 @@ Tool Name:
 Command:
   -p33EP512MU810 \
   -o \
-  dist/default/production/LED_Test1.X.production.elf \
+  dist/default/production/Demo.X.production.elf \
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/.. \
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib \
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../support/PIC24E/gld \
@@ -16,7 +16,8 @@ Command:
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../support/dsPIC33C/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../support/dsPIC33E/gld \
   -Lc:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../support/dsPIC33F/gld \
-  build/default/production/newmainXC16.o \
+  build/default/production/mainXC16.o \
+  ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a \
   --local-stack \
   --defsym=__MPLAB_BUILD=1 \
   -Tp33EP512MU810.gld.00 \
@@ -31,7 +32,7 @@ Command:
   --stackguard=16 \
   --no-force-link \
   --smart-io \
-  -Map=dist/default/production/LED_Test1.X.production.map \
+  -Map=dist/default/production/Demo.X.production.map \
   --report-mem \
   --memorysummary \
   dist/default/production/memoryfile.xml \
@@ -41,10 +42,14 @@ Command:
   --library=lega-c-elf \
   -end-group \
 
-
-Optional library libp33EP512MU810.a not found
 Archive member included because of file (symbol)
 
+..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+                              build/default/production/mainXC16.o (_LEDInit)
+..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
+                              build/default/production/mainXC16.o (_LCDInit)
+
+Optional library libp33EP512MU810.a not found
 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedep.o)
                               (__resetPRI)
 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extended.o)
@@ -60,10 +65,9 @@ xc16-ld 1.35 (A)
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0x100           0x180  (384)
-.text                        0x300                0x8a            0xcf  (207)
-.dinit                       0x38a                0x10            0x18  (24)
+.text                        0x300                0xac           0x102  (258)
 
-                 Total "program" memory used (bytes):          0x267  (615) <1%
+                 Total "program" memory used (bytes):          0x282  (642) <1%
 
 
 Auxflash Memory  [Origin = 0x7fc000, Length = 0x3ffa]
@@ -78,10 +82,8 @@ section                    address   length (PC units)   length (bytes) (dec)
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
-.nbss                       0x1000                   0             0x2  (2)
-.ndata                      0x1002                   0             0x2  (2)
 
-                 Total "data" memory used (bytes):            0x4  (4) <1%
+                 Total "data" memory used (bytes):              0  (0) 
 
 
 Dynamic Memory Usage
@@ -89,20 +91,10 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                       0x1004                              0xcffc  (53244)
+stack                       0x1000                              0xd000  (53248)
 
-                 Maximum dynamic memory (bytes):         0xcffc  (53244)
+                 Maximum dynamic memory (bytes):         0xd000  (53248)
 
-
-External Symbols in Data Memory (by address):
-
-                    0x1000                  _ctr
-                    0x1002                  _delayVal
-
-External Symbols in Data Memory (by name):
-
-                    0x1000                  _ctr
-                    0x1002                  _delayVal
 
 External Symbols in Program Memory (by address):
 
@@ -111,28 +103,32 @@ External Symbols in Program Memory (by address):
                   0x000248                  __data_init_extended
                   0x000248                  __data_init
                   0x0002fa                  __DefaultInterrupt
-                  0x000300                  _main
-                  0x000318                  _LEDInit
-                  0x00032e                  _GreenLEDOn
-                  0x00033a                  _GreenLEDOff
-                  0x000348                  _BlueLEDOn
-                  0x000354                  _BlueLEDOff
-                  0x000362                  _delay
+                  0x000300                  _LCDInit
+                  0x000312                  _LCDCSWrite
+                  0x000330                  _LCDRSTWrite
+                  0x00034e                  _LEDInit
+                  0x000364                  _GreenLEDOn
+                  0x000370                  _GreenLEDOff
+                  0x00037e                  _BlueLEDOn
+                  0x00038a                  _BlueLEDOff
+                  0x000398                  _main
 
 External Symbols in Program Memory (by name):
 
-                  0x000354                  _BlueLEDOff
-                  0x000348                  _BlueLEDOn
-                  0x00033a                  _GreenLEDOff
-                  0x00032e                  _GreenLEDOn
-                  0x000318                  _LEDInit
+                  0x00038a                  _BlueLEDOff
+                  0x00037e                  _BlueLEDOn
+                  0x000370                  _GreenLEDOff
+                  0x000364                  _GreenLEDOn
+                  0x000312                  _LCDCSWrite
+                  0x000300                  _LCDInit
+                  0x000330                  _LCDRSTWrite
+                  0x00034e                  _LEDInit
                   0x0002fa                  __DefaultInterrupt
                   0x000248                  __data_init
                   0x000248                  __data_init_extended
                   0x00023c                  __psv_init
                   0x000200                  __resetPRI
-                  0x000362                  _delay
-                  0x000300                  _main
+                  0x000398                  _main
 
 Memory Configuration
 
@@ -154,7 +150,8 @@ FUID0            0xf80012           0x000002
 
 Linker script and memory map
 
-LOAD build/default/production/newmainXC16.o
+LOAD build/default/production/mainXC16.o
+LOAD ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a
                     0x0001                  __MPLAB_BUILD = 0x1
 LOAD p33EP512MU810
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libfx-elf.a
@@ -234,26 +231,30 @@ __FUID0
 .comment
  *(.comment)
 
-.debug_info       0x000000        0x283
+.debug_info       0x000000        0x4f4
  *(.debug_info)
- .debug_info      0x000000        0x283 build/default/production/newmainXC16.o
+ .debug_info      0x000000        0x117 build/default/production/mainXC16.o
+ .debug_info      0x000117        0x1f5 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_info      0x00030c        0x1e8 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000         0xda
+.debug_abbrev     0x000000        0x10e
  *(.debug_abbrev)
- .debug_abbrev    0x000000         0xda build/default/production/newmainXC16.o
+ .debug_abbrev    0x000000         0x36 build/default/production/mainXC16.o
+ .debug_abbrev    0x000036         0x59 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_abbrev    0x00008f         0x7f ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
 
-.debug_line       0x000000        0x10f
+.debug_line       0x000000        0x226
  *(.debug_line)
- .debug_line      0x000000        0x10f build/default/production/newmainXC16.o
+ .debug_line      0x000000         0x3e build/default/production/mainXC16.o
+ .debug_line      0x00003e         0xf4 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_line      0x000132         0xf4 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
 
-.debug_frame      0x000000         0xd8
+.debug_frame      0x000000        0x138
  *(.debug_frame)
- .debug_frame     0x000000         0xd8 build/default/production/newmainXC16.o
-
-.debug_str        0x000000          0x9
- *(.debug_str)
- .debug_str       0x000000          0x9 build/default/production/newmainXC16.o
+ .debug_frame     0x000000         0x30 build/default/production/mainXC16.o
+ .debug_frame     0x000030         0xa0 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_frame     0x0000d0         0x68 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
 
 .debug_loc
  *(.debug_loc)
@@ -262,18 +263,26 @@ __FUID0
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000         0x82
+                  0x000000         0xb2
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0x82 build/default/production/newmainXC16.o
+                  0x000000         0x1b build/default/production/mainXC16.o
+ .debug_pubnames
+                  0x00001b         0x5a ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_pubnames
+                  0x000075         0x3d ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
 
 .debug_ranges
  *(.debug_ranges)
 
-.debug_aranges    0x000000         0x18
+.debug_aranges    0x000000         0x48
  *(.debug_aranges)
  .debug_aranges
-                  0x000000         0x18 build/default/production/newmainXC16.o
+                  0x000000         0x18 build/default/production/mainXC16.o
+ .debug_aranges
+                  0x000018         0x18 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_aranges
+                  0x000030         0x18 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -2969,41 +2978,41 @@ LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-c-elf.a
 END GROUP
-OUTPUT(dist/default/production/LED_Test1.X.production.elf elf32-pic30)
+OUTPUT(dist/default/production/Demo.X.production.elf elf32-pic30)
 LOAD default_isr
-LOAD data_init
 
 .debug_pubtypes
-                  0x000018         0x1f
+                  0x000048         0x50
  .debug_pubtypes
-                  0x000018         0x1f build/default/production/newmainXC16.o
+                  0x000048         0x12 build/default/production/mainXC16.o
+ .debug_pubtypes
+                  0x00005a         0x1f ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+ .debug_pubtypes
+                  0x000079         0x1f ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
 
 __c30_signature
-                  0x000037         0x12
+                  0x000098         0x1e
  __c30_signature
-                  0x000037          0x6 build/default/production/newmainXC16.o
+                  0x000098          0x6 build/default/production/mainXC16.o
  __c30_signature
-                  0x00003d          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedep.o)
+                  0x00009e          0x6 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
  __c30_signature
-                  0x000043          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extended.o)
+                  0x0000a4          0x6 ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
+ __c30_signature
+                  0x0000aa          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedep.o)
+ __c30_signature
+                  0x0000b0          0x6 c:/program files (x86)/microchip/xc16/v1.35/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extended.o)
 
-.nbss               0x1000          0x2
- .nbss              0x1000          0x2 build/default/production/newmainXC16.o
-                    0x1000                  _ctr
-
-.ndata              0x1002          0x2
- .ndata             0x1002          0x2 build/default/production/newmainXC16.o
-                    0x1002                  _delayVal
-
-.text             0x000300         0x8a
- .text            0x000300         0x8a build/default/production/newmainXC16.o
-                  0x000300                  _main
-                  0x000318                  _LEDInit
-                  0x00032e                  _GreenLEDOn
-                  0x00033a                  _GreenLEDOff
-                  0x000348                  _BlueLEDOn
-                  0x000354                  _BlueLEDOff
-                  0x000362                  _delay
-
-.dinit            0x00038a         0x10
- .dinit           0x00038a         0x10 data_init
+.text             0x000300         0xac
+ .text            0x000300         0x4e ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(lcd.o)
+                  0x000300                  _LCDInit
+                  0x000312                  _LCDCSWrite
+                  0x000330                  _LCDRSTWrite
+ .text            0x00034e         0x4a ..\JasonDevLib.X\dist\default\production\JasonDevLib.X.a(led.o)
+                  0x00034e                  _LEDInit
+                  0x000364                  _GreenLEDOn
+                  0x000370                  _GreenLEDOff
+                  0x00037e                  _BlueLEDOn
+                  0x00038a                  _BlueLEDOff
+ .text            0x000398         0x14 build/default/production/mainXC16.o
+                  0x000398                  _main

@@ -1,14 +1,18 @@
 /*
  * File:   newmainXC16.c
- * Author: megan
- *
- * Created on December 9, 2018, 1:09 AM
+ * Author: Megan Bird
  */
-
 
 #include "xc.h"
 
-//#pragma config FWDTEN = OFF, JTAGEN = OFF
+//--- Procedure Declarations ---//
+
+// LEDs
+void LEDInit(void);
+void GreenLEDOn(void);
+void GreenLEDOff(void);
+void BlueLEDOn(void);
+void BlueLEDOff(void);
 
 void delay(void);
 
@@ -17,21 +21,43 @@ unsigned int delayVal = 3048;
 
 int main(void)
 {
-    // Disable Analog, make digital pin
-    ANSELE = 0;
-    // Set port direction. 1=input(default)
-    TRISE = 0;
+    LEDInit();
     
     while(1)
     {
-        LATE = 0x02;
+        GreenLEDOn();
+        BlueLEDOff();
         delay();
 
-        LATE = 0x01;
+        GreenLEDOff();
+        BlueLEDOn();
         delay();
 
         ctr++;
     }
+}
+
+void LEDInit(void) {
+    // Disable Analog, make digital pin
+    ANSELE &= 0xFC;
+    // Set port direction. 1=input(default)
+    TRISE &= 0xFC;
+}
+
+void GreenLEDOn(void) {
+    LATE |= 0x01;
+}
+
+void GreenLEDOff(void) {
+    LATE &= 0xFE;
+}
+
+void BlueLEDOn(void) {
+    LATE |= 0x02;
+}
+
+void BlueLEDOff(void) {
+    LATE &= 0xFD;
 }
 
 void delay(void)
