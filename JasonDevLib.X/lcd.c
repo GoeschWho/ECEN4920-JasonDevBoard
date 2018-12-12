@@ -27,7 +27,7 @@ void LCDInit(void) {
     
     
     // Disable Analog, make digital pin
-    ANSELE &= 0x1F;
+    ANSELE &= 0x07;
     //ANSELEbits.ANSE6 = 0;
     ANSELGbits.ANSG6 = 0; // SCK2
     ANSELGbits.ANSG7 = 0; // SDI2
@@ -51,7 +51,7 @@ void LCDInit(void) {
     
     LCDRSTWrite(1);
     
-    begin(RA8875_800x480);
+    begin(RA8875_480x272);  // 4.3" screen
     displayOn(true);
     GPIOX(true);      // Enable TFT - display enable tied to GPIOX
     
@@ -60,6 +60,9 @@ void LCDInit(void) {
     
     // LCD_int_Write(1u); 
     LCDINTWrite(1);
+    
+    // Backlight is not turning on unless driven by the LITE pin.
+    LCDLITEWrite(1);
     
     touchEnable(true);
 
@@ -95,8 +98,61 @@ void LCDInitDemo(void) {
     fillScreen(RA8875_BLACK);
 }
 
+void LCDTouchscreenDemo(void) {
+    //------ Declarations ------//
+    uint16_t tx;
+    uint16_t ty;
+    boolean waiting = true;
+    
+    float xScale;
+    float yScale;
+    
+    touchEnable(true);
+    
+    xScale = 1024.0F/width();
+    yScale = 1024.0F/height();
+    
+    touchRead(&tx, &ty);
+    //textMode();
+    //graphicsMode();
+    
+    GreenLEDOff();
+    BlueLEDOff();
+    
+    //------ Wait for touch ------//
+    //CyDelay(10);
+    while ( waiting )  {
+        if (!LCDINTRead()) {
+            BlueLEDOn();
+            if ( touched() ) {
+                GreenLEDOn();
+                touchRead(&tx, &ty);                
+                fillCircle((uint16_t)(tx/xScale), (uint16_t)(ty/yScale), 4, RA8875_WHITE);
+            }
+//            else {
+//                /* Clear TP INT Status */
+//                //writeReg(RA8875_INTC2, RA8875_INTC2_TP);
+//                touchRead(&tx, &ty);
+//                CyDelay(1);
+//                //tx = 0x0000;
+//                //ty = 0x0000;
+//            }
+        }
+//        else {
+//            touchRead(&tx, &ty);
+//            CyDelay(1);
+//            //tx = 0x0000;
+//            //ty = 0x0000;
+//        }
+    }
+}
+
 void LCDCSWrite(int val) {
     PORTEbits.RE7 = val;
+}
+
+void LCDLITEWrite(int val) {
+    PORTEbits.RE6 = val;
 }
 
 void LCDRSTWrite(int val) {
@@ -104,7 +160,12 @@ void LCDRSTWrite(int val) {
 }
 
 void LCDINTWrite(int val) {
-    PORTEbits.RE6 = val;
+    PORTEbits.RE4 = val;
+}
+
+int LCDINTRead(void) {
+    int x = PORTEbits.RE4;
+    return x;
 }
 
 void SPITX(short data) {

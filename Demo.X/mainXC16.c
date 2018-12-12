@@ -15,19 +15,19 @@
 int main(void) {
 
     LEDInit();
-    //GreenLEDOn();
-    //BlueLEDOn();
-
-    
+    GreenLEDOff();
+    BlueLEDOff();
+        
     LCDInit();
     LCDInitDemo();
+    LCDTouchscreenDemo();
     
     while(1) {
-        GreenLEDOn();
-        BlueLEDOff();
-        __delay_ms(800);
-        GreenLEDOff();
-        BlueLEDOn();
-        __delay_ms(800);
+//        GreenLEDOn();
+//        BlueLEDOff();
+//        __delay_ms(800);
+//        GreenLEDOff();
+//        BlueLEDOn();
+//        __delay_ms(800);
     };
 }

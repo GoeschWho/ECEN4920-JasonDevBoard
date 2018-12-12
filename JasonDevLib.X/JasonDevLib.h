@@ -25,9 +25,11 @@ void BlueLEDOff(void);
 // lcd.c
 void LCDInit(void);
 void LCDInitDemo(void);
+void LCDTouchscreenDemo(void);
 void LCDCSWrite(int val);
 void LCDRSTWrite(int val);
-void LCDRSTWrite(int val);
+void LCDINTWrite(int val);
+int LCDINTRead(void);
 void SPITX(short data);
 short SPIRX(void);
 void SPIInit(void);
