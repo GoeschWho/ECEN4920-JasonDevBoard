@@ -1,4 +1,5 @@
 #include "JasonDevLib.h"
+#include "xc.h"
 
 void LEDInit(void) {
     // Disable Analog, make digital pin
@@ -8,17 +9,17 @@ void LEDInit(void) {
 } // end LEDInit()
 
 void GreenLEDOn(void) {
-    LATE |= 0x01;
+    PORTEbits.RE0 = 1;
 } // end GreenLEDOn()
 
 void GreenLEDOff(void) {
-    LATE &= 0xFE;
+    PORTEbits.RE0 = 0;
 } // end GreenLEDOff()
 
 void BlueLEDOn(void) {
-    LATE |= 0x02;
+    PORTEbits.RE1 = 1;
 } // end BlueLEDOn()
 
 void BlueLEDOff(void) {
-    LATE &= 0xFD;
+    PORTEbits.RE1 = 0;
 } // end BlueLEDOff()

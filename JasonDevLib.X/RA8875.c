@@ -24,16 +24,28 @@
     v1.0 - First release
 */
 /**************************************************************************/
+ // Fosc = 8MHz
+#define FOSC (8000000ULL)
+#define FCY (FOSC/2)
 
 #include "xc.h"
 #include "RA8875.h"
 #include "JasonDevLib.h"
+#include "string.h"
+#include "libpic30.h"
+
+
 
 #if defined (ARDUINO_ARCH_ARC32)
   uint32_t spi_speed = 12000000;
 #else
   uint32_t spi_speed = 4000000;
 #endif
+  
+  uint8_t _cs, _rst;
+  uint16_t _width, _height;
+  uint8_t _textScale;
+  enum RA8875sizes _size;
 
 // If the SPI library has transaction support, these functions
 // establish settings and protect from interference from other
@@ -88,7 +100,7 @@ boolean begin(enum RA8875sizes s) {
   else if (_size == RA8875_800x480) {
     _width = 800;
     _height = 480;
-    //__msDelay(5000); //TESTING, REMOVE
+    //__delay_ms(5000); //TESTING, REMOVE
   }
   else {
     return false;
@@ -97,18 +109,21 @@ boolean begin(enum RA8875sizes s) {
  // pinMode(_cs, OUTPUT);
   //digitalWrite(_cs, HIGH);
     //LCDSPI_ss0_m_SetDriveMode(LCDSPI_ss0_m_DM_STRONG);
-    //__msDelay(100);
+    //__delay_ms(100);
     //LCDSPI_ss0_m_Write(0u);
-    //__msDelay(100);
-    LCDSPI_ss0_m_Write(1u);
+    //__delay_ms(100);
+    //LCDSPI_ss0_m_Write(1u);
+    LCDCSWrite(1);
 
     //pinMode(_rst, OUTPUT);
   //digitalWrite(_rst, LOW);
-    rst0_m_Write(0u);
-  __msDelay(100);
+    //rst0_m_Write(0u);
+    LCDRSTWrite(0);
+    __delay_ms(100);
   //digitalWrite(_rst, HIGH);
-    rst0_m_Write(1u);
-  __msDelay(10);
+    //rst0_m_Write(1u);
+     LCDRSTWrite(1);
+  __delay_ms(10);
   
     //LCDSPI_Start();  // Need this?
     
@@ -129,14 +144,14 @@ boolean begin(enum RA8875sizes s) {
     x = readReg(0);
 //    compare = 0x75;
     writeReg(0,x);
-//    __msDelay(100);
+//    __delay_ms(100);
 //    writeReg(0,compare);
-//    __msDelay(100);
+//    __delay_ms(100);
 //    Serial.print("x = 0x"); Serial.println(x,HEX);
 //    if (x != 0x75) {
 //        return false;
 //    }
-//    __msDelay(100);
+//    __delay_ms(100);
   initialize();
 
 #ifdef SPI_HAS_TRANSACTION
@@ -165,7 +180,7 @@ void softReset(void) {
   writeCommand(RA8875_PWRR);
   writeData(RA8875_PWRR_SOFTRESET);
   writeData(RA8875_PWRR_NORMAL);
-  __msDelay(1);
+  __delay_ms(1);
 }
 
 /**************************************************************************/
@@ -176,16 +191,16 @@ void softReset(void) {
 void PLLinit(void) {
   if (_size == RA8875_480x272) {
     writeReg(RA8875_PLLC1, RA8875_PLLC1_PLLDIV1 + 10);
-    __msDelay(1);
+    __delay_ms(1);
     writeReg(RA8875_PLLC2, RA8875_PLLC2_DIV4);
-    __msDelay(1);
+    __delay_ms(1);
   }
   else /* (_size == RA8875_800x480) */ {
     writeReg(RA8875_PLLC1, RA8875_PLLC1_PLLDIV1 + 10);
     //writeReg(RA8875_PLLC1, 0x0b);
-    __msDelay(1);
+    __delay_ms(1);
     writeReg(RA8875_PLLC2, RA8875_PLLC2_DIV4);
-    __msDelay(1);
+    __delay_ms(1);
   }
 }
 
@@ -197,7 +212,7 @@ void PLLinit(void) {
 void initialize(void) {
   PLLinit();
   writeReg(RA8875_SYSR, RA8875_SYSR_16BPP | RA8875_SYSR_MCU8);
-
+  
   /* Timing values */
   uint8_t pixclk;
   uint8_t hsync_start;
@@ -233,7 +248,7 @@ void initialize(void) {
   }
 
   writeReg(RA8875_PCSR, pixclk);
-  __msDelay(1);
+  __delay_ms(1);
   
   /* Horizontal settings registers */
   writeReg(RA8875_HDWR, (_width / 8) - 1);                          // H width: (HDWR + 1) * 8 = 480
@@ -268,7 +283,7 @@ void initialize(void) {
   
   /* Clear the entire window */
   writeReg(RA8875_MCLR, RA8875_MCLR_START | RA8875_MCLR_FULL);
-  __msDelay(500); 
+  __delay_ms(500); 
 }
 
 /**************************************************************************/
@@ -429,9 +444,11 @@ void textEnlarge(uint8_t scale)
 /**************************************************************************/
 void textWrite(const char* buffer, uint16_t len) 
 {
+  uint16_t i=0;
+  
   if (len == 0) len = strlen(buffer);
   writeCommand(RA8875_MRWC);
-  for (uint16_t i=0;i<len;i++)
+  for (i=0;i<len;i++)
   {
     writeData(buffer[i]);
 #if defined(__AVR__)
@@ -439,7 +456,7 @@ void textWrite(const char* buffer, uint16_t len)
 #elif defined(__arm__)
     // This delay is needed with textEnlarge(1) because
     // Teensy 3.X is much faster than Arduino Uno
-    if (_textScale > 0) __msDelay(1);
+    if (_textScale > 0) __delay_ms(1);
 #endif
   }
 }
@@ -501,11 +518,11 @@ void setXY(uint16_t x, uint16_t y) {
 void pushPixels(uint32_t num, uint16_t p) {
     //LCDSPI_Start(); 
  
-    LCDSPI_SpiUartWriteTxData(RA8875_DATAWRITE);
+    SPITX(RA8875_DATAWRITE);
     
   while (num--) {
-    LCDSPI_SpiUartWriteTxData(p >> 8);
-    LCDSPI_SpiUartWriteTxData(p);
+    SPITX(p >> 8);
+    SPITX(p);
   }
 
     //LCDSPI_Stop();
@@ -541,10 +558,10 @@ void drawPixel(int16_t x, int16_t y, uint16_t color)
 
     //LCDSPI_Start(); 
  
-    LCDSPI_SpiUartWriteTxData(RA8875_DATAWRITE);
+    SPITX(RA8875_DATAWRITE);
     
-    LCDSPI_SpiUartWriteTxData(color >> 8);
-    LCDSPI_SpiUartWriteTxData(color);
+    SPITX(color >> 8);
+    SPITX(color);
     
     //LCDSPI_Stop();
 }
@@ -811,7 +828,7 @@ void fillCurve(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t short
       Helper function for higher level circle drawing code
 */
 /**************************************************************************/
-void circleHelper(int16_t x0, int16_t y0, int16_t r, uint16_t color, bool filled)
+void circleHelper(int16_t x0, int16_t y0, int16_t r, uint16_t color, boolean filled)
 {
   /* Set X */
   writeCommand(0x99);
@@ -857,7 +874,7 @@ void circleHelper(int16_t x0, int16_t y0, int16_t r, uint16_t color, bool filled
       Helper function for higher level rectangle drawing code
 */
 /**************************************************************************/
-void rectHelper(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color, bool filled)
+void rectHelper(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color, boolean filled)
 {
   /* Set X */
   writeCommand(0x91);
@@ -912,7 +929,7 @@ void rectHelper(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color, bool
       Helper function for higher level triangle drawing code
 */
 /**************************************************************************/
-void triangleHelper(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color, bool filled)
+void triangleHelper(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color, boolean filled)
 {
   /* Set Point 0 */
   writeCommand(0x91);
@@ -972,7 +989,7 @@ void triangleHelper(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, 
       Helper function for higher level ellipse drawing code
 */
 /**************************************************************************/
-void ellipseHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint16_t color, bool filled)
+void ellipseHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint16_t color, boolean filled)
 {
   /* Set Center Point */
   writeCommand(0xA5);
@@ -1022,7 +1039,7 @@ void ellipseHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t s
       Helper function for higher level curve drawing code
 */
 /**************************************************************************/
-void curveHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint8_t curvePart, uint16_t color, bool filled)
+void curveHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint8_t curvePart, uint16_t color, boolean filled)
 {
   /* Set Center Point */
   writeCommand(0xA5);
@@ -1080,7 +1097,7 @@ void GPIOX(boolean on) {
   if (on) {
 //    x = readReg(RA8875_GPIOX);
     writeReg(RA8875_GPIOX, 1);
-//    __msDelay(5);
+//    __delay_ms(5);
 //    x = readReg(RA8875_GPIOX);
     }
   else 
@@ -1096,7 +1113,7 @@ void PWM1out(uint8_t p) {
 //    uint8 x;
 //    readReg(RA8875_P1DCR);
   writeReg(RA8875_P1DCR, p);
-//    __msDelay(1000);
+//    __delay_ms(1000);
 //    readReg(RA8875_P1DCR);
 }
 
@@ -1120,7 +1137,7 @@ void PWM1config(boolean on, uint8_t clock) {
 //    x = readReg(RA8875_P1CR);
     writeReg(RA8875_P1CR, RA8875_P1CR_ENABLE | (clock & 0x0F));
     //writeReg(RA8875_P1CR, 0x40);
-//    __msDelay(5);
+//    __delay_ms(5);
 //    x = readReg(RA8875_P1CR);
   } else {
     writeReg(RA8875_P1CR, RA8875_P1CR_DISABLE | (clock & 0x0F));
@@ -1269,8 +1286,10 @@ void  writeReg(uint8_t reg, uint8_t val)
 /**************************************************************************/
 uint8_t  readReg(uint8_t reg) 
 {
+  
   writeCommand(reg);
   return readData();
+            
 }
 
 /**************************************************************************/
@@ -1280,10 +1299,12 @@ uint8_t  readReg(uint8_t reg)
 /**************************************************************************/
 void  writeData(uint8_t d) 
 {
-    __msDelay(1);
-    LCDSPI_SpiUartWriteTxData(RA8875_DATAWRITE);
-    LCDSPI_SpiUartWriteTxData(d);
-    __msDelay(1);
+    __delay_ms(1);
+    LCDCSWrite(0);
+    SPITX(RA8875_DATAWRITE);
+    SPITX(d);
+    LCDCSWrite(1); 
+    __delay_ms(1);
 }
 
 /**************************************************************************/
@@ -1296,32 +1317,38 @@ uint8_t  readData(void)
     uint8_t x = 0u;
     
     // prepare for request
-    __msDelay(1);
-    LCDSPI_ClearMasterInterruptSource(LCDSPI_INTR_MASTER_SPI_DONE); // testing
+    __delay_ms(1);
+    //LCDSPI_ClearMasterInterruptSource(LCDSPI_INTR_MASTER_SPI_DONE); // testing
     
     // testing
-    LCDSPI_SpiUartClearRxBuffer();
+    //LCDSPI_SpiUartClearRxBuffer();
     
     // request data
-    LCDSPI_SpiUartWriteTxData(RA8875_DATAREAD);
-    LCDSPI_SpiUartWriteTxData(0);
-
+    LCDCSWrite(0);
+    SPITX(RA8875_DATAREAD);
+    //SPITX(0);
+    x = SPIRX();
+    LCDCSWrite(1);
+    
+    /*
     // wait for transmission to finish
     while(0u == (LCDSPI_GetMasterInterruptSource() & LCDSPI_INTR_MASTER_SPI_DONE)) //testing
     {
-        /* Wait while Master completes transaction */
+        // Wait
     }
+    
     while (LCDSPI_SpiUartGetRxBufferSize() == 0)
-    __msDelay(1);
+    __delay_ms(1);
     
     // discard blank data captured during transmission
     while (LCDSPI_SpiUartGetRxBufferSize() > 1) {
     //while (LCDSPI_SpiUartReadRxData() == 0xFF ) {
-        LCDSPI_SpiUartReadRxData();
+        SPIRX();
     }
-    x = LCDSPI_SpiUartReadRxData();
+     * */
+    //x = SPI2BUF();
     
-    __msDelay(1);  
+    __delay_ms(1);  
     
     return x;
 }
@@ -1333,10 +1360,12 @@ uint8_t  readData(void)
 /**************************************************************************/
 void  writeCommand(uint8_t d) 
 {
-    __msDelay(1);
-    LCDSPI_SpiUartWriteTxData(RA8875_CMDWRITE);
-    LCDSPI_SpiUartWriteTxData(d);
-    __msDelay(1);
+    __delay_ms(1);
+    LCDCSWrite(0);
+    SPITX(RA8875_CMDWRITE);
+    SPITX(d);
+    LCDCSWrite(1);
+    __delay_ms(1);
 }
 
 /**************************************************************************/
@@ -1349,26 +1378,29 @@ uint8_t  readStatus(void)
     uint8_t x;
     
     // prepare for request
-    __msDelay(1);
-    LCDSPI_ClearMasterInterruptSource(LCDSPI_INTR_MASTER_SPI_DONE);
+    __delay_ms(1);
+    //LCDSPI_ClearMasterInterruptSource(LCDSPI_INTR_MASTER_SPI_DONE);
     
     // request status
-    LCDSPI_SpiUartWriteTxData(RA8875_CMDREAD);
-    LCDSPI_SpiUartWriteTxData(0);                   // keep SPI line open for RX
+    LCDCSWrite(0);
+    SPITX(RA8875_CMDREAD);
+    x = SPIRX();                   // keep SPI line open for RX
+    LCDCSWrite(1);
     
+    /*
     // wait for transmission to finish
     while(0u == (LCDSPI_GetMasterInterruptSource() & LCDSPI_INTR_MASTER_SPI_DONE))
     {
-        /* Wait while Master completes transaction */
+        // Wait
     }
     
     // discard blank data captured during transmission
     while (LCDSPI_SpiUartGetRxBufferSize() > 1) {
-        x = LCDSPI_SpiUartReadRxData();
+        x = SPIRX();
     }
-    x = LCDSPI_SpiUartReadRxData();
-
-    __msDelay(1);
+    x = SPIRX();
+    */
+    __delay_ms(1);
     
     return x;
 }

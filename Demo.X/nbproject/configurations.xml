@@ -45,7 +45,23 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../JasonDevLib.X/dist/default/production/JasonDevLib.X.a</linkerLibFileItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../JasonDevLib.X"
+                            CT="3"
+                            CN="default"
+                            AC="true"
+                            BL="true"
+                            WD="../JasonDevLib.X"
+                            BC="${MAKE}  -f Makefile CONF=default"
+                            DBC="${MAKE}  -f Makefile CONF=default TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/default&quot; &quot;dist/default&quot;"
+                            OP="dist/default/production/JasonDevLib.X.a"
+                            DOP="dist/default/debug/JasonDevLib.X.a"
+                            FL="dist/default/production/JasonDevLib.X.a"
+                            PD="dist/default/production/JasonDevLib.X.a"
+                            DD="dist/default/debug/JasonDevLib.X.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>

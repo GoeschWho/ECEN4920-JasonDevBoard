@@ -14,7 +14,6 @@ extern "C" {
     
     
 #include "xc.h"
-#include "Libpic30.h"  // Delays
     
 // led.c
 void LEDInit(void);
@@ -25,8 +24,13 @@ void BlueLEDOff(void);
 
 // lcd.c
 void LCDInit(void);
+void LCDInitDemo(void);
 void LCDCSWrite(int val);
 void LCDRSTWrite(int val);
+void LCDRSTWrite(int val);
+void SPITX(short data);
+short SPIRX(void);
+void SPIInit(void);
 
 
 #ifdef	__cplusplus

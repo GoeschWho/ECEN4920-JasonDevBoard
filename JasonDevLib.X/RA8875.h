@@ -23,7 +23,14 @@
     
     v1.0 - First release
 */
-    
+
+#ifndef ADAFRUIT_RA8875_H
+#define ADAFRUIT_RA8875_H
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
 #include "xc.h"
 
 //#if ARDUINO >= 100
@@ -40,9 +47,6 @@
 #endif
 
 //#include <Adafruit_GFX.h>
-
-#ifndef _ADAFRUIT_RA8875_H
-#define _ADAFRUIT_RA8875_H
 
 // Sizes!
 enum RA8875sizes { RA8875_480x272, RA8875_800x480 };
@@ -156,10 +160,12 @@ typedef enum {
   void ellipseHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint16_t color, boolean filled);
   void curveHelper(int16_t xCenter, int16_t yCenter, int16_t longAxis, int16_t shortAxis, uint8_t curvePart, uint16_t color, boolean filled);
 
+  /*
   uint8_t _cs, _rst;
   uint16_t _width, _height;
   uint8_t _textScale;
   enum RA8875sizes _size;
+   * */
 //};
 
 // Colors (RGB565)
